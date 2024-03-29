@@ -56,7 +56,7 @@
       },
     },
     methods: {
-      ...mapActions(usersStore, ['setUsers']),
+      //...mapActions(usersStore, ['setUsers']),
       ...mapActions(usersStore, ['setFilterOption']),
       ...mapActions(usersStore, ['updateUser']),
       ...mapActions(usersStore, ['toggleUserActiveInDB']),
@@ -77,7 +77,7 @@
           this.totalUsers = response.data.data.totalUsers;
           this.limit = response.data.data.limit;
           this.users = response.data.data.users;
-          this.setUsers(this.users);
+          //this.setUsers(this.users);
           this.filter = this.filterOption;
           this.isLoadingDataUsers = false;
         })

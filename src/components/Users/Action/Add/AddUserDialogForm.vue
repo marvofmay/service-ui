@@ -2,6 +2,7 @@
   import UserMainDataForm from "@/components/Users/Shared/Form/UserMainDataForm.vue";
   import { mapActions, mapState } from "pinia";
   import { usersStore } from "@/stores/users";
+  import { selectOptionsStore } from "@/stores/selectOptions";
   import UserAddressResidenceDataForm from "@/components/Users/Shared/Form/UserAddressResidenceDataForm.vue";
   import UserAddressDeliveryDataForm from "@/components/Users/Shared/Form/UserAddressDeliveryDataForm.vue";
 
@@ -85,6 +86,69 @@
       ...mapActions(usersStore, ['setFilterOption']),
       ...mapActions(usersStore, ['updateUser']),
       ...mapActions(usersStore, ['addUserToDB']),
+      ...mapActions(selectOptionsStore, ['fetchSelectOptionsFromDB']),
+      async fetchSelectSkillsOptions() {
+        const query = '?page=1&limit=1000&kind=skill';
+        const fetchSelectSkillsOptionsFromDB = this.fetchSelectOptionsFromDB(query);
+
+        fetchSelectSkillsOptionsFromDB.then(async response => {
+          this.errorMessage = null;
+          const selectOptions = response.data.data.selectOptions;
+          this.skills = await this.mapSelectOptionsFromDB(selectOptions);
+        })
+        .catch((error) => {
+          this.errorMessage = error.message;
+        });
+      },
+      async fetchSelectRolesOptions() {
+        const query = '?page=1&limit=1000&kind=role';
+        const fetchSelectRolesOptionsFromDB = this.fetchSelectOptionsFromDB(query);
+
+        fetchSelectRolesOptionsFromDB.then(async response => {
+          this.errorMessage = null;
+          const selectOptions = response.data.data.selectOptions;
+          this.roles = await this.mapSelectOptionsFromDB(selectOptions);
+        })
+            .catch((error) => {
+              this.errorMessage = error.message;
+            });
+      },
+      async fetchSelectInterestsOptions() {
+        const query = '?page=1&limit=1000&kind=interest';
+        const fetchSelectRolesOptionsFromDB = this.fetchSelectOptionsFromDB(query);
+
+        fetchSelectRolesOptionsFromDB.then(async response => {
+          this.errorMessage = null;
+          const selectOptions = response.data.data.selectOptions;
+          this.interests = await this.mapSelectOptionsFromDB(selectOptions);
+        })
+            .catch((error) => {
+              this.errorMessage = error.message;
+            });
+      },
+      mapSelectOptionsFromDB (selectOptions) {
+        return new Promise((resolve, reject) => {
+              if (! selectOptions) {
+                reject(new Error(`No data for skills select`));
+                return;
+              }
+
+              const sortedOptions = selectOptions.sort((a, b) => {
+                const nameA = a.name.toUpperCase();
+                const nameB = b.name.toUpperCase();
+                if (nameA < nameB) {
+                  return -1;
+                }
+                if (nameA > nameB) {
+                  return 1;
+                }
+                return 0;
+              });
+              const names = sortedOptions.map(option => option.name);
+
+              resolve(names);
+        });
+      },
       submitUserFormData () {
         let addresses = [];
 
@@ -119,6 +183,11 @@
             this.$emit('clickedSave', 'error', errors.join(', '), true, 10000);
           });
       },
+    },
+    mounted() {
+      this.fetchSelectSkillsOptions();
+      this.fetchSelectRolesOptions();
+      this.fetchSelectInterestsOptions();
     }
   }
 </script>
@@ -151,7 +220,14 @@
             <v-expansion-panel>
               <v-expansion-panel-title>User's main data</v-expansion-panel-title>
               <v-expansion-panel-text>
-                <UserMainDataForm :user = "userForm" :isAdmin="isAdmin" :action="action" />
+                <UserMainDataForm
+                    :user = "userForm"
+                    :isAdmin = "isAdmin"
+                    :action = "action"
+                    :skills = "skills"
+                    :roles = "roles"
+                    :interests = "interests"
+                />
               </v-expansion-panel-text>
             </v-expansion-panel>
             <v-expansion-panel>

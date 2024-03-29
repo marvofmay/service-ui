@@ -1,6 +1,9 @@
 <script>
   export default {
     props: {
+      skills: Array,
+      roles: Array,
+      interests: Array,
       user: Object,
       isAdmin: Boolean,
       action: String,
@@ -43,15 +46,15 @@
         <v-col cols="12" sm="6">
           <v-autocomplete
               v-model="user.roles"
-              :items="['ROLE_MODERATOR', 'ROLE_ADMIN']"
+              :items="roles"
               label="Roles*"
               multiple
           >
           </v-autocomplete>
         </v-col>
         <v-col cols="12" sm="6">
-          <v-select  v-model="user.skills"
-              :items="['php', 'js', 'python', 'c#', 'larvel', 'symfony']"
+          <v-select v-model="user.skills"
+              :items=skills
               label="skills"
               multiple
           ></v-select>
@@ -59,7 +62,7 @@
         <v-col cols="12" sm="6">
           <v-autocomplete
               v-model="user.interests"
-              :items="['Skiing', 'Ice hockey', 'Soccer', 'Basketball', 'Hockey', 'Reading', 'Writing', 'Coding', 'Basejump']"
+              :items="interests"
               label="Interests"
               multiple
           >
